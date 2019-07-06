@@ -29,8 +29,8 @@ def index():
                   f'\nFull Path: {request.full_path}\nReferrer: {request.referrer}\nUser Agent: {request.user_agent}')
 
     engine.execute(f"""INSERT INTO requests (requested_at, ip, host, requested_path)
-	VALUES ('{now().strftime('%Y-%m-%d %H:%M:%S')}','{ip}', '{socket_host}', '{path}');
-	""")
+      VALUES ('{now().strftime('%Y-%m-%d %H:%M:%S')}','{ip}', '{socket_host}', '{path}');
+      """)
 
     result = engine.execute("SELECT * FROM requests ORDER BY id DESC LIMIT 25;")
     hf = result.keys()
