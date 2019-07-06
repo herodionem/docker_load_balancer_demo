@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  app:
+    image: herodionem/docker_flask_fun:latest
+    build: ./
+    depends_on:
+      - db
+    volumes:
+      - .:/var/www/
+    networks:
+      - flask
+    command: "python app.py"
+  db:
+    image: mysql:8.0
+    ports:
+      - 3306:3306
+    volumes:
+      - flask_app_db:/var/lib/mysql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./mysqld.conf:/etc/mysql/conf.d/mysqld.conf
+    networks:
+      - flask
+    environment:
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=adminpass
+      - MYSQL_DATABASE=base
+      - MYSQL_ROOT_PASSWORD=root
+  lb:
+    image: herodionem/lb:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile.load_balancer
+    ports:
+      - 80:80
+    networks:
+      - flask
+    environment:
+      - PROXY_UPSTREAM=app:5000
+
+networks:
+  flask:
+
+volumes:
+  flask_app_db:
